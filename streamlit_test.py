@@ -19,7 +19,7 @@ st.title("GEO Search *beta*")
 #st.sidebar.subheader("The following search tool parses GEO series 14-19 finding matches using keywords for tissue (e.g. PBMC) and technology (such as scRNAseq). The tool outputs a title, summary, and overall design of matching datasets. Clicking the button for each dataset will add the dataset to the cart.")
 
 
-@st.experimental_memo
+#@st.experimental_memo
 def _search(input, technology, _reorganized_meta):
 
     for i in range(0, len(reorganize_meta)):
