@@ -79,7 +79,7 @@ if 'meeting_search' not in st.session_state:
 
 tissue_input = st.sidebar.text_input("Keywords (e.g tissue), please input as a comma seperated list")
 #tissue_input = ["ALS"]
-technology_input = st.sidebar.text_input("Platform Keywords, please input as a comma separated list")
+technology_input = st.sidebar.text_input("Platform Keywords (e.g scRNAseq, single cell RNAseq), please input as a comma separated list")
 #technology_input = ["10X"]
 search_reply = st.sidebar.button("Search!")
 
