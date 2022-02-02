@@ -54,15 +54,11 @@ def _search(input, technology, _reorganized_meta):
 
     return filtered
 
-
-
-
 technology = [ 'chromium', '10x', "scRNAseq", "single-cell RNA-seq", "scRNA-seq", "scRNA", "single cell RNA-seq", "single cell RNAseq", "single cell"]
 tissue = ["pbmc", "peripheral blood" ,"blood"]
 #chromium, 10x, scRNAseq, single-cell RNA-seq, scRNA-seq, scRNA, single cell RNA-seq, single cell RNAseq, single cell
 #pbmc, peripheral blood, blood
 # obj = (search(['pbmc', 'peripheral blood', 'blood'], technology))
-
 
 saved = []
 if 'saved' not in st.session_state:
@@ -83,12 +79,9 @@ tissue_input = st.sidebar.text_input("Keywords")
 technology_input = st.sidebar.text_input("Platform Keywords")
 search_reply = st.sidebar.button("Search!")
 
-if(st.session_state.initial_input == 0):   
+if(st.session_state.initial_input == 0 and search_reply):   
     st.balloons()
-st.session_state.initial_input = 1
-
-initial_click = 0 
-
+    st.session_state.initial_input = 1
 
 
 @st.experimental_memo
@@ -104,7 +97,6 @@ def trim_meta(_meta):
 
 if len(tissue_input) != 0 and len(technology_input) != 0 and st.session_state.initial_input == 1: 
 
-    
 
     tissue_input = tissue_input.split(",")
 
