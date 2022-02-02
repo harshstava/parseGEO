@@ -26,11 +26,12 @@ def _search(input, technology, _reorganized_meta):
         o = reorganize_meta[i]
         o.index = None 
 
-    for i in range(0, len(input)):
-        input[i] = input[i].lower().strip()
+    for i, s in enumerate(input):
+        input[i] = s.lower().strip()
 
-    for i in range(0, len(technology)):
-            technology[i] = technology[i].lower().strip()
+
+    for i, s in enumerate(technology):
+        technology[i] = s.lower().strip()
         
     hits = 0
     
@@ -42,8 +43,8 @@ def _search(input, technology, _reorganized_meta):
         set_summary = set(obj.supplementary_information['summary_list'])
         set_overall_design = set(obj.supplementary_information['overall_design_lower_list'])
         set_technology = set(technology)
-        for items in input: 
-            if items in obj.supplementary_information['title_lower']  or items in obj.supplementary_information['summary_lower'] or items in obj.supplementary_information['overall_design_lower'] or items in obj.author: 
+        for items in input:
+            if items in set_title  or items in set_overall_design or items in set_overall_design or items in obj.author: 
                 if (set_technology & set_title) or (set_technology & set_summary) or (set_technology & set_overall_design):
                     if obj.index == None:
                         filtered.append(obj)
@@ -51,11 +52,11 @@ def _search(input, technology, _reorganized_meta):
                         reorganize_meta[i].index = i
                     else: 
                         continue
-
+                        
     return filtered
 
-technology = [ 'chromium', '10x', "scRNAseq", "single-cell RNA-seq", "scRNA-seq", "scRNA", "single cell RNA-seq", "single cell RNAseq", "single cell"]
-tissue = ["pbmc", "peripheral blood" ,"blood"]
+#technology = [ 'chromium', '10x', "scRNAseq", "single-cell RNA-seq", "scRNA-seq", "scRNA", "single cell RNA-seq", "single cell RNAseq", "single cell"]
+#tissue = ["pbmc", "peripheral blood" ,"blood"]
 #chromium, 10x, scRNAseq, single-cell RNA-seq, scRNA-seq, scRNA, single cell RNA-seq, single cell RNAseq, single cell
 #pbmc, peripheral blood, blood
 # obj = (search(['pbmc', 'peripheral blood', 'blood'], technology))
@@ -66,6 +67,7 @@ if 'saved' not in st.session_state:
 
 if 'reoganized_meta' not in st.session_state:
     st.session_state.reorganized_meta = reorganize_meta
+
 if 'initial_input' not in st.session_state:
     st.session_state.initial_input = 0
 
@@ -76,12 +78,14 @@ if 'meeting_search' not in st.session_state:
 
 
 tissue_input = st.sidebar.text_input("Keywords")
+#tissue_input = ["ALS"]
 technology_input = st.sidebar.text_input("Platform Keywords")
+#technology_input = ["10X"]
 search_reply = st.sidebar.button("Search!")
 
-if(st.session_state.initial_input == 0 and search_reply):   
+if(st.session_state.initial_input == 0):   
     st.balloons()
-    st.session_state.initial_input = 1
+st.session_state.initial_input = 1
 
 
 @st.experimental_memo
@@ -102,23 +106,20 @@ if len(tissue_input) != 0 and len(technology_input) != 0 and st.session_state.in
 
 
     technology_input = technology_input.split(",")
-    # for i in range(0, len(technology_input)):
-    #     st.sidebar.write(technology_input[i])
 
-
-    obj = _search(input = tissue_input, technology = technology_input, _reorganized_meta = st.session_state.reorganized_meta)
-    trim_meta(obj)
-    st.session_state.total_studies = len(st.session_state.reorganized_meta)
-    st.session_state.meeting_search = len(st.session_state.trimmed_meta)
-    for i in range(0, len(st.session_state.trimmed_meta)):
-        obj = st.session_state.trimmed_meta[i]
-        button = obj['accession']
+    search_results = _search(input = tissue_input, technology = technology_input, _reorganized_meta = st.session_state.reorganized_meta)
+    # trim_meta(obj)
+    
+    st.session_state.meeting_search = len(search_results)
+    for i in range(0, len(search_results)):
+        obj = search_results[i]
+        button = obj.accession
         reply = st.button(button)
 
-        st.write("**" +obj['title'] + "**")
-        st.write("*Number of Samples: " + str(obj['samples']) + "*")
-        st.write(obj["summary"])
-        st.write(obj["overall_design"])
+        st.write("**" +obj.title + "**")
+        st.write("*Number of Samples: " + str(obj.number_of_samples) + "*")
+        st.write(obj.summary)
+        st.write(obj.overall_design)
 
             
         if reply:
@@ -130,6 +131,7 @@ if len(tissue_input) != 0 and len(technology_input) != 0 and st.session_state.in
     st.sidebar.metric("Total Studies Meeting Search", st.session_state.meeting_search)
     st.sidebar.metric("Studies in Cart", len(st.session_state.saved))
     
+st.sidebar.metric("Studies in Database", len(st.session_state.reorganized_meta))
     # if len(st.session_state.saved) != 0:
     #     view_cart = st.sidebar.button("View Cart")
     #     if view_cart:   
@@ -138,7 +140,6 @@ if len(tissue_input) != 0 and len(technology_input) != 0 and st.session_state.in
     #             st.sidebar.write(st.session_state.saved[i].title)
 
 
-st.sidebar.metric("Studies in Database", st.session_state.total_studies)
 
 
 
